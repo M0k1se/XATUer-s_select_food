@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XATUer今天吃什么</title>
+    <style>
+        body { 
+            text-align: center; 
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        button {
+            display: block;
+            width: 200px;
+            padding: 15px;
+            margin: 10px auto;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .hidden {
+            display: none;
+        }
+        h1 {
+            color: #343a40;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="main-menu">
+        <h1>XATUer今天吃什么</h1>
+        <button onclick="showCanteen('big')">大食堂</button>
+        <button onclick="showCanteen('small')">小食堂</button>
+        <button onclick="randomSelection()">完全随机</button>
+    </div>
+
+    <div class="container hidden" id="big-canteen">
+        <h1>大食堂</h1>
+        <button onclick="showFloor('big', 1, 'big-canteen')">一楼</button>
+        <button onclick="showFloor('big', 2, 'big-canteen')">二楼</button>
+        <button onclick="showFloor('big', 3, 'big-canteen')">三楼</button>
+        <button onclick="randomBigCanteen()">大食堂随机</button>
+        <button onclick="goBack('main-menu')">返回</button>
+    </div>
+
+    <div class="container hidden" id="small-canteen">
+        <h1>小食堂</h1>
+        <button onclick="showFloor('small', 1, 'small-canteen')">一楼</button>
+        <button onclick="showFloor('small', 2, 'small-canteen')">二楼</button>
+        <button onclick="randomSmallCanteen()">小食堂随机</button>
+        <button onclick="goBack('main-menu')">返回</button>
+    </div>
+
+    <div class="container hidden" id="result">
+        <h1 id="result-text"></h1>
+        <button onclick="randomAgain()">重新抽取</button>
+        <button onclick="goBack(lastMenu)">返回</button>
+    </div>
+
+    <script>
+        let interval;
+        let lastMenu = 'main-menu';
+
+        function showCanteen(type) {
+            lastMenu = 'main-menu';
+            document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+            document.getElementById(type + '-canteen').classList.remove('hidden');
+        }
+
+        function showFloor(canteen, floor, previousMenu) {
+            lastMenu = previousMenu;
+            document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+            document.getElementById('result').classList.remove('hidden');
+            let resultText = document.getElementById('result-text');
+            let counter = 0;
+            interval = setInterval(() => {
+                let randomStall = Math.floor(Math.random() * 20) + 1;
+                resultText.innerText = `${canteen === 'big' ? '大食堂' : '小食堂'} ${floor}楼 - 档口 ${randomStall}`;
+                counter++;
+                if (counter > 20) {
+                    clearInterval(interval);
+                }
+            }, 50);
+        }
+
+        function randomBigCanteen() {
+            let randomFloor = Math.floor(Math.random() * 3) + 1;
+            showFloor('big', randomFloor, 'big-canteen');
+        }
+
+        function randomSmallCanteen() {
+            let randomFloor = Math.floor(Math.random() * 2) + 1;
+            showFloor('small', randomFloor, 'small-canteen');
+        }
+
+        function randomSelection() {
+            let floors = [
+                { canteen: 'big', floor: 1 }, { canteen: 'big', floor: 2 }, { canteen: 'big', floor: 3 },
+                { canteen: 'small', floor: 1 }, { canteen: 'small', floor: 2 }
+            ];
+            let randomPick = floors[Math.floor(Math.random() * floors.length)];
+            showFloor(randomPick.canteen, randomPick.floor, 'main-menu');
+        }
+
+        function randomAgain() {
+            clearInterval(interval);
+            randomSelection();
+        }
+
+        function goBack(menu) {
+            clearInterval(interval);
+            document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+            document.getElementById(menu).classList.remove('hidden');
+            lastMenu = 'main-menu';
+        }
+    </script>
+</body>
+</html>
